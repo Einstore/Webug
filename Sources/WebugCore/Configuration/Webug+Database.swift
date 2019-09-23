@@ -6,6 +6,8 @@ import FluentSQLiteDriver
 extension Webug {
     
     @discardableResult public static func setup(database s: inout Services) throws -> DatabaseID {
+        s.provider(FluentProvider())
+        
         let dbId: DatabaseID
         
         if Environment.get("DB") == "postgres" {
@@ -20,9 +22,9 @@ extension Webug {
                 let conf = PostgresConfiguration(
                     hostname: Environment.get("DB_HOST") ?? "localhost",
                     port: port ?? 5432,
-                    username: Environment.get("DB_USER") ?? "speedster",
+                    username: Environment.get("DB_USER") ?? "webug",
                     password: Environment.get("DB_HPASSWORD") ?? "aaaaaa",
-                    database: Environment.get("DB_DATABASE") ?? "speedster",
+                    database: Environment.get("DB_DATABASE") ?? "webug",
                     tlsConfiguration: nil
                 )
                 return conf
@@ -39,7 +41,7 @@ extension Webug {
             }
             
             s.register(SQLiteConfiguration.self) { c in
-                return .init(storage: .connection(.file(path: "/tmp/speedster.sqlite")))
+                return .init(storage: .connection(.file(path: "/tmp/webug.sqlite")))
             }
             
             s.register(Database.self) { c in

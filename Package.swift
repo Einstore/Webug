@@ -11,6 +11,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0-alpha.3.1"),
         .package(url: "https://github.com/swift-server/async-http-client.git", from: "1.0.0-alpha.3"),
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0-alpha.2.1"),
+        .package(url: "https://github.com/vapor/leaf.git", from: "4.0.0-alpha.1.1"),
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.0.0-alpha.3"),
         .package(url: "https://github.com/vapor/fluent-sqlite-driver.git", from: "4.0.0-alpha.3"),
         .package(url: "https://github.com/vapor/redis.git", from: "4.0.0-alpha.1")
@@ -20,6 +21,7 @@ let package = Package(
             name: "Webug",
             dependencies: [
                 "Vapor",
+                "Leaf",
                 "WebugCore"
             ]
         ),

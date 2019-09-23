@@ -3,6 +3,12 @@ import Fluent
 
 class WebugController: Controller {
     
+    let maxLimit = 500
+    
+    public enum Error: Swift.Error {
+        case notFound
+    }
+    
     let db: Database
     
     required init(_ db: Database) {
@@ -10,33 +16,80 @@ class WebugController: Controller {
     }
     
     func routes(_ r: Routes, _ c: Container) throws {
-//        r.get("credentials") { req -> EventLoopFuture<Response> in
-//            return Credentials.select(on: self.db).all().map { arr in
-//                return arr.map { Credentials.Display($0) }.asResponse()
-//            }
-//        }
+        r.get("fetch") { req -> EventLoopFuture<Response> in
+            return WebugManager.fetch(request: req, on: self.db)
+        }
+        r.post("fetch") { req -> EventLoopFuture<Response> in
+            return WebugManager.fetch(request: req, on: self.db)
+        }
+        r.put("fetch") { req -> EventLoopFuture<Response> in
+            return WebugManager.fetch(request: req, on: self.db)
+        }
+        r.patch("fetch") { req -> EventLoopFuture<Response> in
+            return WebugManager.fetch(request: req, on: self.db)
+        }
+        r.delete("fetch") { req -> EventLoopFuture<Response> in
+            return WebugManager.fetch(request: req, on: self.db)
+        }
+        r.on(.OPTIONS, ["fetch"]) { req -> EventLoopFuture<Response> in
+            return WebugManager.fetch(request: req, on: self.db)
+        }
         
-//        r.post("credentials") { req -> EventLoopFuture<Response> in
-//            let post = try req.content.decode(Credentials.Post.self)
-//            let object = Credentials.row(from: post)
-//            return object.save(on: self.db).map { _ in
-//                return object.asDisplay().asResponse(.created)
-//            }
-//        }
-//
-//        r.get("credentials", ":cred_id") { req -> EventLoopFuture<Response> in
-//            let id = req.parameters.get("cred_id", as: Speedster.DbIdType.self)
-//            return Credentials.find(failing: id, on: self.db).map { object in
-//                return object.asDisplay().asResponse()
-//            }
-//        }
-//
-//        r.delete("credentials", ":cred_id") { req -> EventLoopFuture<Response> in
-//            let id = req.parameters.get("cred_id", as: Speedster.DbIdType.self)
-//            return Credentials.find(failing: id, on: self.db).flatMap { object in
-//                return object.delete(on: self.db).asDeletedResponse(on: c)
-//            }
-//        }
+        r.get("requests") { req -> EventLoopFuture<[WebugEntry.Short]> in
+            var q = WebugEntry.query(on: self.db).sort(\WebugEntry.$requested, .descending)
+            if let params = try? req.query.decode(WebugEntry.QueryParams.self) {
+                if let search = params.search {
+                    q = q.filter(\WebugEntry.$url == search)
+                }
+                if let group = params.group {
+                    return WebugGroup.query(on: self.db).filter(\WebugGroup.$name == group).first().flatMap { group in
+                        guard let groupId = group?.id else {
+                            return c.eventLoop.makeFailedFuture(Error.notFound)
+                        }
+                        q = q.filter(\WebugEntry.$groupId == groupId)
+                        return q.limit(params.limit ?? self.maxLimit).all().map { entries in
+                            entries.asShort()
+                        }
+                    }
+                }
+            } else {
+                q = q.limit(self.maxLimit)
+            }
+            return q.all().map { entries in
+                entries.asShort()
+            }
+        }
+        
+        r.get("requests", ":id_request") { req -> EventLoopFuture<WebugEntry> in
+            guard let entryId = req.parameters.get("id_request", as: Webug.DbIdType.self) else {
+                throw Error.notFound
+            }
+            return WebugEntry.query(on: self.db).filter(\WebugEntry.$id == entryId).first().flatMapThrowing { entry in
+                guard let entry = entry else {
+                    throw Error.notFound
+                }
+                return entry
+            }
+        }
+        
+        r.get("groups") { req -> EventLoopFuture<[WebugGroup]> in
+            let q = WebugGroup.query(on: self.db).sort(\WebugGroup.$name, .ascending)
+            return q.all()
+        }
+        
+        r.delete("groups", ":id_group") { req -> EventLoopFuture<Response> in
+            guard let groupId = req.parameters.get("id_group", as: Webug.DbIdType.self) else {
+                throw Error.notFound
+            }
+            return WebugGroup.query(on: self.db).filter(\WebugGroup.$id == groupId).first().flatMap { group in
+                guard let group = group else {
+                    return c.eventLoop.makeFailedFuture(Error.notFound)
+                }
+                return group.delete(on: self.db).map { _ in
+                    return Response(status: .noContent, headers: [:])
+                }
+            }
+        }
     }
     
 }
