@@ -46,7 +46,7 @@ class WebugController: Controller {
                         guard let groupId = group?.id else {
                             return c.eventLoop.makeFailedFuture(Error.notFound)
                         }
-                        q = q.filter(\WebugEntry.$groupId == groupId)
+                        q = q.filter(\WebugEntry.$group_id == groupId)
                         return q.limit(params.limit ?? self.maxLimit).all().map { entries in
                             entries.asShort()
                         }
@@ -75,6 +75,10 @@ class WebugController: Controller {
         r.get("groups") { req -> EventLoopFuture<[WebugGroup]> in
             let q = WebugGroup.query(on: self.db).sort(\WebugGroup.$name, .ascending)
             return q.all()
+        }
+        
+        r.get("groups", "new") { req -> EventLoopFuture<WebugGroup> in
+            return WebugManager.new(on: self.db)
         }
         
         r.delete("groups", ":id_group") { req -> EventLoopFuture<Response> in

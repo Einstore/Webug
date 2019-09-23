@@ -11,20 +11,22 @@ public final class WebugEntry: Model, Content {
     }
     
     public struct Short: Content {
+        
         public let id: Webug.DbIdType
-        public let groupId: Webug.DbIdType
+        public let group_id: Webug.DbIdType
         public let requested: Date
         public let method: String
         public let url: String
         public let responded: Date?
         public let status: Int?
+        
     }
     
     public static let schema = "webug"
     
     @ID(key: "id") public var id: Webug.DbIdType?
 
-    @Field(key: "group_id") public var groupId: Webug.DbIdType
+    @Field(key: "group_id") public var group_id: Webug.DbIdType
     @Field(key: "requested") public var requested: Date
     @Field(key: "method") public var method: String
     @Field(key: "url") public var url: String
@@ -32,14 +34,14 @@ public final class WebugEntry: Model, Content {
     @Field(key: "payload") public var payload: Data?
     @Field(key: "responded") public var responded: Date?
     @Field(key: "status") public var status: Int?
-    @Field(key: "response_headers") public var responseHeaders: [String: String]?
+    @Field(key: "response_headers") public var response_headers: [String: String]?
     @Field(key: "body") public var body: Data?
 
     required public init() { }
 
     public init(
         id: Webug.DbIdType? = nil,
-        groupId: Webug.DbIdType,
+        group_id: Webug.DbIdType,
         requested: Date = Date(),
         method: String,
         url: String,
@@ -47,11 +49,11 @@ public final class WebugEntry: Model, Content {
         payload: Data? = nil,
         responded: Date? = nil,
         status: Int? = nil,
-        responseHeaders: [String: String]? = nil,
+        response_headers: [String: String]? = nil,
         body: Data? = nil
     ) {
         self.id = id
-        self.groupId = groupId
+        self.group_id = group_id
         self.requested = requested
         self.method = method
         self.url = url
@@ -59,7 +61,7 @@ public final class WebugEntry: Model, Content {
         self.payload = payload
         self.responded = responded
         self.status = status
-        self.responseHeaders = responseHeaders
+        self.response_headers = response_headers
         self.body = body
     }
     
@@ -96,7 +98,7 @@ extension Array where Element == WebugEntry {
         map({
             WebugEntry.Short(
                 id: $0.id!,
-                groupId: $0.groupId,
+                group_id: $0.group_id,
                 requested: $0.requested,
                 method: $0.method,
                 url: $0.url,

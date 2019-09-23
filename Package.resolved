@@ -96,8 +96,8 @@
         "repositoryURL": "https://github.com/vapor/postgres-kit.git",
         "state": {
           "branch": null,
-          "revision": "74d49fd4dcd9e2e47bb56f63ebaf27ea60706a6b",
-          "version": "2.0.0-alpha.2"
+          "revision": "2cdd00a798430625f403d5ea38d25a75f3333267",
+          "version": "2.0.0-alpha.2.1"
         }
       },
       {
@@ -159,8 +159,8 @@
         "repositoryURL": "https://github.com/vapor/sqlite-nio.git",
         "state": {
           "branch": null,
-          "revision": "af713ceab2d186739b7ffd95f7edcfad8d8d57bf",
-          "version": "1.0.0-alpha.1.1"
+          "revision": "f7df5fa1fad85dbdf9172e291c0bc011d97e130e",
+          "version": "1.0.0-alpha.1.2"
         }
       },
       {
